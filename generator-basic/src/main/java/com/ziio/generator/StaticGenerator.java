@@ -9,6 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
+/**
+ * 静态文件生成器( file.copy )
+ */
 public class StaticGenerator {
     public static void copyFilesByHutool(String inputPath, String outputPath) {
         FileUtil.copy(inputPath, outputPath, false);

@@ -37,7 +37,7 @@ public class DynamicGenerator {
         // 加载模板
         Template template = configuration.getTemplate(new File(inputPath).getName());
         // 指定生成路径
-        FileWriter out = new FileWriter("acm.java");
+        FileWriter out = new FileWriter(outputPath);
         // 生成文件
         template.process(model,out);
         // 关闭输出流

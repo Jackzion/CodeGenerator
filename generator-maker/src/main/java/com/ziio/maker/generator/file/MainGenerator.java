@@ -31,31 +31,4 @@ public class MainGenerator {
         DynamicFileGenerator.doGenerate(inputDynamicFilePath,outputDynamicFilePath,model);
     }
 
-    public static void main(String[] args) throws TemplateException, IOException {
-        Meta meta = MetaManager.getSingleInstance();
-        System.out.println(meta);
-
-        // 输出根路径
-        String projectPath = System.getProperty("user.dir");
-        String outputPath = projectPath + File.separator + "generater" + File.separator + meta.getName();
-
-        // 读取 resources 目录
-        ClassPathResource classPathResource = new ClassPathResource("");
-        String inputResourcePath = classPathResource.getAbsolutePath();
-
-        // Java 包基础路径
-        String outputBasePackage = meta.getBasePackage();
-        String outputBasePackagePath = StrUtil.join("/", StrUtil.split(outputBasePackage, "."));
-        String outputBaseJavaPackagePath = outputPath + File.separator + "src/main/java" + outputBasePackagePath;
-
-        String inputFilePath;
-        String outputFilePath;
-
-        // datamodel
-        inputFilePath = inputResourcePath + File.separator + "templates/java/model/DataModel.java.ftl";
-        outputFilePath = outputBaseJavaPackagePath + "/model/DataModel.java";
-
-        DynamicFileGenerator.doGenerate(inputFilePath,outputFilePath,meta);
-    }
-
 }

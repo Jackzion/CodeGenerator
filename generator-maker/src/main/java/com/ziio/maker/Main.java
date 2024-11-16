@@ -3,6 +3,8 @@ package com.ziio.maker;
 import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.util.StrUtil;
 import com.ziio.maker.generator.file.DynamicFileGenerator;
+import com.ziio.maker.generator.file.JarGenerator;
+import com.ziio.maker.generator.file.ScriptGenerator;
 import com.ziio.maker.meta.Meta;
 import com.ziio.maker.meta.MetaManager;
 import freemarker.template.TemplateException;
@@ -13,7 +15,7 @@ import java.io.IOException;
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
-    public static void main(String[] args) throws TemplateException, IOException {
+    public static void main(String[] args) throws TemplateException, IOException, InterruptedException {
         // import meta
         Meta meta = MetaManager.getSingleInstance();
         System.out.println(meta);
@@ -73,5 +75,19 @@ public class Main {
         inputFilePath = inputResourcePath + File.separator + "templates/java/generator/StaticGenerator.java.ftl";
         outputFilePath = outputBaseJavaPackagePath + "/generator/StaticGenerator.java";
         DynamicFileGenerator.doGenerate(inputFilePath , outputFilePath, meta);
+
+        // pom.xml
+        inputFilePath = inputResourcePath + File.separator + "templates/java/pom.xml.ftl";
+        outputFilePath = outputPath + File.separator + "pom.xml";
+        DynamicFileGenerator.doGenerate(inputFilePath , outputFilePath, meta);
+
+        // 构建 jar 包
+        JarGenerator.doGenerate(outputPath);
+
+        // 封装 .bat 文件
+        String shellOutputPath = outputPath + File.separator + "generator";
+        String jarName = String.format("%s-%s-jar-with-dependencies.jar",meta.getName(),meta.getVersion());
+        String jarPath = "target/" + jarName;
+        ScriptGenerator.doGenerate(shellOutputPath,jarPath);
     }
 }

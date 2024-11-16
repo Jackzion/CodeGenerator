@@ -22,7 +22,7 @@ public class Main {
 
         // 输出根路径
         String projectPath = System.getProperty("user.dir");
-        String outputPath = projectPath + File.separator + "generater" + File.separator + meta.getName();
+        String outputPath = projectPath + File.separator + "generator" + File.separator + meta.getName();
 
         // 读取 resources 目录
         ClassPathResource classPathResource = new ClassPathResource("");
@@ -31,7 +31,7 @@ public class Main {
         // Java 包基础路径
         String outputBasePackage = meta.getBasePackage();
         String outputBasePackagePath = StrUtil.join("/", StrUtil.split(outputBasePackage, "."));
-        String outputBaseJavaPackagePath = outputPath + File.separator + "src/main/java" + outputBasePackagePath;
+        String outputBaseJavaPackagePath = outputPath + File.separator + "src/main/java" + File.separator + outputBasePackagePath;
 
         String inputFilePath;
         String outputFilePath;
@@ -54,6 +54,11 @@ public class Main {
         // cli.command.GenerateCommand
         inputFilePath = inputResourcePath + File.separator + "templates/java/cli/command/GenerateCommand.java.ftl";
         outputFilePath = outputBaseJavaPackagePath + "/cli/command/GenerateCommand.java";
+        DynamicFileGenerator.doGenerate(inputFilePath,outputFilePath,meta);
+
+        // cli.CommandExecutor
+        inputFilePath = inputResourcePath + File.separator + "templates/java/cli/CommandExecutor.java.ftl";
+        outputFilePath = outputBaseJavaPackagePath + "/cli/CommandExecutor.java";
         DynamicFileGenerator.doGenerate(inputFilePath,outputFilePath,meta);
 
         // Main

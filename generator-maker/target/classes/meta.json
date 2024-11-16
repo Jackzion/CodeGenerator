@@ -6,7 +6,7 @@
   "author": "ziio",
   "createTime": "2024-11-22",
   "fileConfig": {
-    "inputRootPath": "D:\\StarProject\\CodeGenerator\\code-producer-demo-projects\\acm-template-pro",
+    "inputRootPath": "D:/StarProject/CodeGenerator/code-producer-demo-projects/acm-template-pro",
     "outputRootPath": "generated",
     "type": "dir",
     "files": [

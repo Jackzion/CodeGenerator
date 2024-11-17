@@ -19,7 +19,7 @@ public class MainGenerator {
 * @throws TemplateException
 * @throws IOException
 */
-public static void doGenerate(Object model) throws TemplateException, IOException {
+public static void doGenerate(DateModel model) throws TemplateException, IOException {
         String inputRootPath = ".source/acm-template-pro";
         String outputRootPath = "generated";
 
@@ -31,9 +31,11 @@ public static void doGenerate(Object model) throws TemplateException, IOExceptio
         outputPath = new File(outputRootPath, "src/com/ziio/acm/MainTemplate.java").getAbsolutePath();
         DynamicGenerator.doGenerate(inputPath, outputPath, model);
 
-        inputPath = new File(inputRootPath, ".gitignore").getAbsolutePath();
-        outputPath = new File(outputRootPath, ".gitignore").getAbsolutePath();
-        StaticGenerator.copyFilesByHutool(inputPath, outputPath);
+        if(needGit){
+                inputPath = new File(inputRootPath, ".gitignore").getAbsolutePath();
+                outputPath = new File(outputRootPath, ".gitignore").getAbsolutePath();
+                StaticGenerator.copyFilesByHutool(inputPath, outputPath);
+        }
 
         inputPath = new File(inputRootPath, "README.md").getAbsolutePath();
         outputPath = new File(outputRootPath, "README.md").getAbsolutePath();

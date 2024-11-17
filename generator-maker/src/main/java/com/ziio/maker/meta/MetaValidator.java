@@ -37,6 +37,11 @@ public class MetaValidator {
                 return;
             }
             for(Meta.ModelConfig.ModelInfo modelInfo : modelInfos){
+                // MODEL_GROUP skip validate
+                String groupKey = modelInfo.getGroupKey();
+                if (StrUtil.isNotEmpty(groupKey)) {
+                    continue;
+                }
                 // filedName required
                 String fieldName = modelInfo.getFieldName();
                 if (StrUtil.isBlank(fieldName)) {
@@ -121,6 +126,10 @@ public class MetaValidator {
         List<Meta.FileConfig.FileInfo> fileInfoList = fileConfig.getFiles();
         if (CollectionUtil.isNotEmpty(fileInfoList)) {
             for (Meta.FileConfig.FileInfo fileInfo : fileInfoList) {
+                // FILE.GROUP skip validate
+                if(fileInfo.getType().equals(FileTypeEnum.GROUP.getValue())){
+                    continue;
+                }
                 // inputPath required
                 String inputPath = fileInfo.getInputPath();
                 if (StrUtil.isBlank(inputPath)) {

@@ -4,6 +4,9 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
+import com.ziio.maker.meta.enums.FileGenerateTypeEnum;
+import com.ziio.maker.meta.enums.FileTypeEnum;
+import com.ziio.maker.meta.enums.ModelTypeEnum;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -42,7 +45,7 @@ public class MetaValidator {
                 // filedType default string
                 String modelInfoType = modelInfo.getType();
                 if (StrUtil.isEmpty(modelInfoType)) {
-                    modelInfo.setType("String");
+                    modelInfo.setType(ModelTypeEnum.STRING.getValue());
                 }
             }
         }
@@ -111,9 +114,8 @@ public class MetaValidator {
         }
         // type default dir
         String fileConfigType = fileConfig.getType();
-        String defaultType = "dir";
         if (StrUtil.isEmpty(fileConfigType)) {
-            fileConfig.setOutputRootPath(defaultType);
+            fileConfig.setOutputRootPath(FileTypeEnum.DIR.getValue());
         }
         // fileInfo
         List<Meta.FileConfig.FileInfo> fileInfoList = fileConfig.getFiles();
@@ -134,9 +136,9 @@ public class MetaValidator {
                 if (StrUtil.isBlank(fileInfoType)) {
                     // no file suffix
                     if (StrUtil.isBlank(FileUtil.getSuffix(inputPath))) {
-                        fileInfo.setType("dir");
+                        fileInfo.setType(FileTypeEnum.DIR.getValue());
                     } else {
-                        fileInfo.setType("file");
+                        fileInfo.setType(FileTypeEnum.FILE.getValue());
                     }
                 }
                 // generateType default static (suffix not ftl) , or dynamic
@@ -144,9 +146,9 @@ public class MetaValidator {
                 if (StrUtil.isBlank(generateType)) {
                     // no file suffix
                     if (inputPath.endsWith(".ftl")) {
-                        fileInfo.setGenerateType("dynamic");
+                        fileInfo.setGenerateType(FileGenerateTypeEnum.DYNAMIC.getValue());
                     } else {
-                        fileInfo.setGenerateType("static");
+                        fileInfo.setGenerateType(FileGenerateTypeEnum.STATIC.getValue());
                     }
                 }
             }

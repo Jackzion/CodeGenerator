@@ -108,5 +108,13 @@ public class Main {
         String jarName = String.format("%s-%s-jar-with-dependencies.jar",meta.getName(),meta.getVersion());
         String jarPath = "target/" + jarName;
         ScriptGenerator.doGenerate(shellOutputPath,jarPath);
+
+        // 生成精简版程序
+        String distOutputPath = outputPath + "-dist";
+        // 拷贝 jar 包
+        String targetAbsolutePath = distOutputPath + File.separator + "target";
+        FileUtil.mkdir(targetAbsolutePath);
+        String jarAbsolutePath = outputPath + File.separator + jarPath;
+        FileUtil.copy(jarAbsolutePath , distOutputPath ,true);
     }
 }

@@ -116,5 +116,11 @@ public class Main {
         FileUtil.mkdir(targetAbsolutePath);
         String jarAbsolutePath = outputPath + File.separator + jarPath;
         FileUtil.copy(jarAbsolutePath , distOutputPath ,true);
+        // 拷贝脚本文件
+        FileUtil.copy(shellOutputPath + ".bat", distOutputPath, true);
+        // 拷贝源模板文件
+        FileUtil.copy(sourceCopyDestPath,distOutputPath,true);
+
+        // todo:  创建 Git 代理 , process git init ,  new .ignore.ftl
     }
 }

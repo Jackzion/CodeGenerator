@@ -8,7 +8,7 @@
   "fileConfig": {
     "inputRootPath": ".source/acm-template-pro",
     "sourceRootPath": "D:/StarProject/CodeGenerator/code-producer-demo-projects/acm-template-pro",
-    "outputRootPath": "generator",
+    "outputRootPath": "generated",
     "type": "dir",
     "files": [
       {

@@ -21,6 +21,7 @@ public class Meta {
     private FileConfig fileConfig;
     private ModelConfig modelConfig;
 
+    // 模板文件设置
     @NoArgsConstructor
     @Data
     public static class FileConfig {
@@ -40,6 +41,7 @@ public class Meta {
         }
     }
 
+    // Command Model 填充设置
     @NoArgsConstructor
     @Data
     public static class ModelConfig {

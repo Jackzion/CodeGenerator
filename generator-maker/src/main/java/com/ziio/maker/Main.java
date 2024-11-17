@@ -1,5 +1,6 @@
 package com.ziio.maker;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.util.StrUtil;
 import com.ziio.maker.generator.file.DynamicFileGenerator;
@@ -15,6 +16,8 @@ import java.io.IOException;
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
+
+
     public static void main(String[] args) throws TemplateException, IOException, InterruptedException {
         // import meta
         Meta meta = MetaManager.getSingleInstance();
@@ -23,6 +26,11 @@ public class Main {
         // 输出根路径
         String projectPath = System.getProperty("user.dir");
         String outputPath = projectPath + File.separator + "generator" + File.separator + meta.getName();
+
+        // 复制原始模板文件
+        String sourceRootPath = meta.getFileConfig().getSourceRootPath();
+        String sourceCopyDestPath = outputPath + File.separator + ".source";
+        FileUtil.copy(sourceRootPath , sourceCopyDestPath , false);
 
         // 读取 resources 目录
         ClassPathResource classPathResource = new ClassPathResource("");
@@ -85,6 +93,12 @@ public class Main {
         inputFilePath = inputResourcePath + File.separator + "templates/java/pom.xml.ftl";
         outputFilePath = outputPath + File.separator + "pom.xml";
         DynamicFileGenerator.doGenerate(inputFilePath , outputFilePath, meta);
+
+        // README.md
+        // todo : AI 生成 README.md
+        inputFilePath = inputFilePath = inputResourcePath + File.separator + "templates/README.md.ftl";
+        outputFilePath = outputPath + File.separator + "README.md";
+        DynamicFileGenerator.doGenerate(inputFilePath,outputFilePath,meta);
 
         // 构建 jar 包
         JarGenerator.doGenerate(outputPath);

@@ -3,9 +3,9 @@ package com.ziio.acm;
 import java.util.Scanner;
 
 /**
- * ACM 输入模板（多数之和）
- * @author ${author}
- */
+* ACM 输入模板（多数之和）
+* @author ${mainTemplate.author}
+*/
 public class MainTemplate {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -29,12 +29,11 @@ public class MainTemplate {
                 sum += num;
             }
 
-            System.out.println("${outputText}" + sum);
+            System.out.println("${mainTemplate.outputText}" + sum);
 <#if loop>
         }
 </#if>
         scanner.close();
     }
 }
-
 

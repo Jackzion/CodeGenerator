@@ -12,6 +12,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 元信息校验
@@ -31,7 +32,6 @@ public class MetaValidator {
         // modelConfig
         Meta.ModelConfig modelConfig = meta.getModelConfig();
         if (modelConfig != null) {
-
             List<Meta.ModelConfig.ModelInfo> modelInfos = modelConfig.getModels();
             if (!CollectionUtil.isNotEmpty(modelInfos)) {
                 return;
@@ -40,6 +40,14 @@ public class MetaValidator {
                 // MODEL_GROUP skip validate
                 String groupKey = modelInfo.getGroupKey();
                 if (StrUtil.isNotEmpty(groupKey)) {
+                    // get the Next allArgsStr if is groupKey
+                    if(StrUtil.isNotEmpty(groupKey)){
+                        List<Meta.ModelConfig.ModelInfo> submodelInfoList = modelInfo.getModels();
+                        String allArgsStr = submodelInfoList.stream()
+                                .map(submodelInfo -> String.format("\"--%s\"", submodelInfo.getFieldName()))
+                                .collect(Collectors.joining(", "));
+                        modelInfo.setAllArgsStr(allArgsStr);
+                    }
                     continue;
                 }
                 // filedName required

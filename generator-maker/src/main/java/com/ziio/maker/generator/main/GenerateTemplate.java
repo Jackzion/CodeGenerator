@@ -21,9 +21,9 @@ public abstract class GenerateTemplate {
         Meta meta = MetaManager.getSingleInstance();
         System.out.println(meta);
 
-        // 输出根路径
+        // CodeGenerator output rootPath
         String projectPath = System.getProperty("user.dir");
-        String outputPath = projectPath + File.separator + "generator" + File.separator + meta.getName();
+        String outputPath = projectPath + File.separator + "generated" + File.separator + meta.getName();
 
         // 复制原始模板文件
         String sourceCopyDestPath = copySourceTemplate(meta, outputPath);

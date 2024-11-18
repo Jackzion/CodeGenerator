@@ -62,6 +62,8 @@ public class Meta {
             private String groupKey;
             private String groupName;
             private List<ModelInfo> models;
+            private String condition;   // trigger , input -loop => other models required input
+            private String allArgsStr;  // all args commandLine execute next
         }
     }
 }

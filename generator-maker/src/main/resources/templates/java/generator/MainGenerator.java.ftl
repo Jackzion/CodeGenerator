@@ -7,12 +7,12 @@ import java.io.File;
 import java.io.IOException;
 
 <#macro generateFile indent fileInfo>
-${ident}inputPath = new File(inputRootPath, "${fileInfo.inputPath}").getAbsolutePath();
-${ident}outputPath = new File(outputRootPath, "${fileInfo.outputPath}").getAbsolutePath();
+${indent}inputPath = new File(inputRootPath, "${fileInfo.inputPath}").getAbsolutePath();
+${indent}outputPath = new File(outputRootPath, "${fileInfo.outputPath}").getAbsolutePath();
 <#if fileInfo.generateType == "static">
-${ident}StaticGenerator.copyFilesByHutool(inputPath, outputPath);
+${indent}StaticGenerator.copyFilesByHutool(inputPath, outputPath);
 <#else>
-${ident}DynamicGenerator.doGenerate(inputPath, outputPath, model);
+${indent}DynamicGenerator.doGenerate(inputPath, outputPath, model);
 </#if>
 </#macro>
 
@@ -29,7 +29,7 @@ public class MainGenerator {
 * @throws TemplateException
 * @throws IOException
 */
-public static void doGenerate(DateModel model) throws TemplateException, IOException {
+public static void doGenerate(DataModel model) throws TemplateException, IOException {
         String inputRootPath = "${fileConfig.inputRootPath}";
         String outputRootPath = "${fileConfig.outputRootPath}";
 
@@ -37,7 +37,15 @@ public static void doGenerate(DateModel model) throws TemplateException, IOExcep
         String outputPath;
 
     <#list modelConfig.models as modelInfo>
-        ${modelInfo.type} ${modelInfo.fieldName} = model.${modelInfo.fieldName};
+        <#-- 有分组 String outputText = model.mainTemplate.outputText; -->
+        <#if modelInfo.groupKey??>
+            <#list modelInfo.models as subModelInfo>
+                ${subModelInfo.type} ${subModelInfo.fieldName} = model.${modelInfo.groupKey}.${subModelInfo.fieldName};
+            </#list>
+        <#-- 无分组 -->
+        <#else>
+            ${modelInfo.type} ${modelInfo.fieldName} = model.${modelInfo.fieldName};
+        </#if>
     </#list>
 
     <#list fileConfig.files as fileInfo>

@@ -52,7 +52,7 @@ public class TemplateMaker {
      *
      * @param newMeta
      * @param originProjectPath
-     * @param inputFilePathList
+     * @param templateMakerFileConfig   List(filterConfig + path)
      * @param modelInfo
      * @param searchStr
      * @param id
@@ -92,6 +92,27 @@ public class TemplateMaker {
                 Meta.FileConfig.FileInfo fileInfo = makeFileTemplate(modelInfo,searchStr,sourceRootPath,file);
                 newFileInfoList.add(fileInfo);
             }
+        }
+
+        // 如果是文件组
+        TemplateMakerFileConfig.FileGroupConfig fileGroupConfig = templateMakerFileConfig.getFileGroupConfig();
+        if(fileGroupConfig != null){
+            String condition = fileGroupConfig.getCondition();
+            String groupKey = fileGroupConfig.getGroupKey();
+            String groupName = fileGroupConfig.getGroupName();
+
+            // 新增分组配置
+            Meta.FileConfig.FileInfo groupFIleInfo = new Meta.FileConfig.FileInfo();
+            groupFIleInfo.setType(FileTypeEnum.GROUP.getValue());
+            groupFIleInfo.setCondition(condition);
+            groupFIleInfo.setGroupKey(groupKey);
+            groupFIleInfo.setGroupName(groupName);
+
+            // 把文件放到一个分组内
+            // 变更 newFileInfoList 地址 --> 指向 GroupInfo
+            groupFIleInfo.setFiles(newFileInfoList);
+            newFileInfoList = new ArrayList<>();
+            newFileInfoList.add(groupFIleInfo);
         }
 
         // 三、生成配置文件
@@ -193,6 +214,13 @@ public class TemplateMaker {
         String originProjectPath = new File(projectPath).getParent() + File.separator + "code-producer-demo-projects/acm-template-pro";
         String inputFilePath = "src/com/ziio/acm";
         TemplateMakerFileConfig templateMakerFileConfig = new TemplateMakerFileConfig();
+        // 设置分组
+        TemplateMakerFileConfig.FileGroupConfig fileGroupConfig = new TemplateMakerFileConfig.FileGroupConfig();
+        fileGroupConfig.setCondition("outputText");
+        fileGroupConfig.setGroupKey("test");
+        fileGroupConfig.setGroupName("测试分组");
+        templateMakerFileConfig.setFileGroupConfig(fileGroupConfig);
+        // 设置 filterConfigs
         List<FileFilterConfig> fileFilterConfigs = new ArrayList<>();
         FileFilterConfig fileFilterConfig = FileFilterConfig.builder()
                 .range(FileFilterRangeEnum.FILE_NAME.getValue())
@@ -204,12 +232,13 @@ public class TemplateMaker {
         fileInfoConfig1.setPath(inputFilePath);
         templateMakerFileConfig.setFiles(Arrays.asList(fileInfoConfig1));
 
-        // second
+        // 设置 modelInfo
         Meta.ModelConfig.ModelInfo modelInfo = new Meta.ModelConfig.ModelInfo();
         modelInfo.setFieldName("className");
         modelInfo.setType("String");
         String searchStr = "MainTemplate";
 
+        // outPut
         long id = makeTemplate(meta, originProjectPath, templateMakerFileConfig, modelInfo, searchStr, 1858691755625439232L);
         System.out.println(id);
     }

@@ -2,6 +2,7 @@ package com.ziio.maker.template;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
@@ -16,28 +17,58 @@ import com.ziio.maker.template.model.TemplateMakerFileConfig;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TemplateMaker {
 
     // fileInfo 去重
-    private static List<Meta.FileConfig.FileInfo> distinctFiles(List<Meta.FileConfig.FileInfo> fileInfoList){
+    private static List<Meta.FileConfig.FileInfo> distinctFiles(List<Meta.FileConfig.FileInfo> fileInfoList) {
         // todo: .ftl to .ftl 和 .java to .ftl 重复
-        List<Meta.FileConfig.FileInfo> newFileInfoList = new ArrayList<>(
-                fileInfoList.stream()
+        // 策略 : 同组文件 merge ， 不同组文件保留
+
+        // 1. 有分组 , 以 groupKey 划分
+        Map<String, List<Meta.FileConfig.FileInfo>> groupKeyFileInfoListMap = fileInfoList.stream()
+                .filter(fileInfo -> StrUtil.isNotBlank(fileInfo.getGroupKey()))
+                .collect(
+                        Collectors.groupingBy(Meta.FileConfig.FileInfo::getGroupKey)
+                );
+        // 2. 同组 fileInfoList 合并
+        Map<String, Meta.FileConfig.FileInfo> groupKeyMergedFileInfoMap = new HashMap<>();
+        for (Map.Entry<String, List<Meta.FileConfig.FileInfo>> entry : groupKeyFileInfoListMap.entrySet()) {
+            List<Meta.FileConfig.FileInfo> tempFileInfoList = entry.getValue();
+            // 扁平化后进行 filter
+            ArrayList<Meta.FileConfig.FileInfo> newFileInfoList = new ArrayList<>(tempFileInfoList.stream()
+                    .flatMap(fileInfo -> fileInfo.getFiles().stream())
+                    .collect(
+                            Collectors.toMap(Meta.FileConfig.FileInfo::getInputPath, o -> o, (e, r) -> r)
+                    ).values()
+            );
+            // 使用新的 group 配置
+            Meta.FileConfig.FileInfo newFileInfo = CollUtil.getLast(tempFileInfoList);
+            newFileInfo.setFiles(newFileInfoList);
+            String groupKey = entry.getKey();
+            groupKeyMergedFileInfoMap.put(groupKey, newFileInfo);
+        }
+        // 3. 将文件分组添加到结果列表
+        ArrayList<Meta.FileConfig.FileInfo> resultList = new ArrayList<>(groupKeyMergedFileInfoMap.values());
+
+        // 4. 未分组文件 filter 后直接添加到结果列表
+        List<Meta.FileConfig.FileInfo> noGroupFileInfo = fileInfoList.stream().filter(fileInfo -> StrUtil.isBlank(fileInfo.getGroupKey())).collect(Collectors.toList());
+        resultList.addAll(new ArrayList<>(
+                noGroupFileInfo.stream()
                         .collect(
                                 // 保留后者 inputPath
                                 Collectors.toMap(Meta.FileConfig.FileInfo::getInputPath, o -> o, (e, r) -> r)
                         ).values()
-        );
-        return newFileInfoList;
+        ));
+
+        return resultList;
     }
 
     // modelInfo 去重
-    private static List<Meta.ModelConfig.ModelInfo> distinctModels(List<Meta.ModelConfig.ModelInfo> modelInfoList){
+    private static List<Meta.ModelConfig.ModelInfo> distinctModels(List<Meta.ModelConfig.ModelInfo> modelInfoList) {
         List<Meta.ModelConfig.ModelInfo> newModelInfoList = new ArrayList<>(
                 modelInfoList.stream()
                         .collect(
@@ -52,13 +83,13 @@ public class TemplateMaker {
      *
      * @param newMeta
      * @param originProjectPath
-     * @param templateMakerFileConfig   List(filterConfig + path)
+     * @param templateMakerFileConfig List(filterConfig + path)
      * @param modelInfo
      * @param searchStr
      * @param id
      * @return
      */
-    public static long makeTemplate(Meta newMeta , String originProjectPath , TemplateMakerFileConfig templateMakerFileConfig , Meta.ModelConfig.ModelInfo modelInfo, String searchStr, Long id){
+    public static long makeTemplate(Meta newMeta, String originProjectPath, TemplateMakerFileConfig templateMakerFileConfig, Meta.ModelConfig.ModelInfo modelInfo, String searchStr, Long id) {
         // 没有 id 则生成
         if (id == null) {
             id = IdUtil.getSnowflakeNextId();
@@ -78,25 +109,25 @@ public class TemplateMaker {
 
         // 二、生成 .ftl 文件
         List<Meta.FileConfig.FileInfo> newFileInfoList = new ArrayList<>();
-        for(TemplateMakerFileConfig.FileInfoConfig fileInfoConfig  : fileConfigInfoList){
+        for (TemplateMakerFileConfig.FileInfoConfig fileInfoConfig : fileConfigInfoList) {
             String inputFilePath = fileInfoConfig.getPath();
 
             // 相对路径转绝对路径
-            if(!inputFilePath.startsWith(sourceRootPath)){
+            if (!inputFilePath.startsWith(sourceRootPath)) {
                 inputFilePath = sourceRootPath + File.separator + inputFilePath;
             }
 
             // 获取过滤后的文件列表(不再存在目录)
-            List<File> fileList = FileFilter.doFileFilter(inputFilePath,fileInfoConfig.getFileFilterConfigs());
-            for(File file : fileList){
-                Meta.FileConfig.FileInfo fileInfo = makeFileTemplate(modelInfo,searchStr,sourceRootPath,file);
+            List<File> fileList = FileFilter.doFileFilter(inputFilePath, fileInfoConfig.getFileFilterConfigs());
+            for (File file : fileList) {
+                Meta.FileConfig.FileInfo fileInfo = makeFileTemplate(modelInfo, searchStr, sourceRootPath, file);
                 newFileInfoList.add(fileInfo);
             }
         }
 
         // 如果是文件组
         TemplateMakerFileConfig.FileGroupConfig fileGroupConfig = templateMakerFileConfig.getFileGroupConfig();
-        if(fileGroupConfig != null){
+        if (fileGroupConfig != null) {
             String condition = fileGroupConfig.getCondition();
             String groupKey = fileGroupConfig.getGroupKey();
             String groupName = fileGroupConfig.getGroupName();
@@ -158,13 +189,13 @@ public class TemplateMaker {
     /**
      * 制作文件模板
      *
-     * @param modelInfo         one info of model
-     * @param searchStr         需替换为占位符的 string
-     * @param sourceRootPath    模板文件目录（root）
-     * @param inputFile         需要制作为模板的文件路径
+     * @param modelInfo      one info of model
+     * @param searchStr      需替换为占位符的 string
+     * @param sourceRootPath 模板文件目录（root）
+     * @param inputFile      需要制作为模板的文件路径
      * @return
      */
-    public static Meta.FileConfig.FileInfo makeFileTemplate(Meta.ModelConfig.ModelInfo modelInfo , String searchStr , String sourceRootPath , File inputFile){
+    public static Meta.FileConfig.FileInfo makeFileTemplate(Meta.ModelConfig.ModelInfo modelInfo, String searchStr, String sourceRootPath, File inputFile) {
         // 要处理的文件绝对路径(用于制作模板)
         String fileInputAbsolutePath = inputFile.getAbsolutePath().replaceAll("\\\\", "/");
         String fileOutputAbsolutePath = fileInputAbsolutePath + ".ftl";
@@ -193,14 +224,14 @@ public class TemplateMaker {
         fileInfo.setGenerateType(FileGenerateTypeEnum.DYNAMIC.getValue());
 
         // 和源文件内容一致，没有插值，则为静态生成
-        if(newFileContent.equals(fileContent)){
+        if (newFileContent.equals(fileContent)) {
             // inputPath = outputPath
             fileInfo.setOutputPath(fileInputPath);
             fileInfo.setGenerateType(FileGenerateTypeEnum.STATIC.getValue());
-        }else{
+        } else {
             // 生成模板文件
             fileInfo.setGenerateType(FileGenerateTypeEnum.DYNAMIC.getValue());
-            FileUtil.writeUtf8String(newFileContent,fileOutputAbsolutePath);
+            FileUtil.writeUtf8String(newFileContent, fileOutputAbsolutePath);
         }
         return fileInfo;
     }
@@ -212,7 +243,8 @@ public class TemplateMaker {
 
         String projectPath = System.getProperty("user.dir");
         String originProjectPath = new File(projectPath).getParent() + File.separator + "code-producer-demo-projects/acm-template-pro";
-        String inputFilePath = "src/com/ziio/acm";
+        String inputFilePath = "src/com/ziio/acm/pack";
+        String inputFilePath2 = "src/com/ziio/acm/constant";
         TemplateMakerFileConfig templateMakerFileConfig = new TemplateMakerFileConfig();
         // 设置分组
         TemplateMakerFileConfig.FileGroupConfig fileGroupConfig = new TemplateMakerFileConfig.FileGroupConfig();
@@ -227,10 +259,16 @@ public class TemplateMaker {
                 .rule(FileFilterRuleEnum.CONTAINS.getValue())
                 .value("Base").build();
         fileFilterConfigs.add(fileFilterConfig);
+        // first
         TemplateMakerFileConfig.FileInfoConfig fileInfoConfig1 = new TemplateMakerFileConfig.FileInfoConfig();
         fileInfoConfig1.setFileFilterConfigs(fileFilterConfigs);
         fileInfoConfig1.setPath(inputFilePath);
-        templateMakerFileConfig.setFiles(Arrays.asList(fileInfoConfig1));
+        // second
+        TemplateMakerFileConfig.FileInfoConfig fileInfoConfig2 = new TemplateMakerFileConfig.FileInfoConfig();
+        fileInfoConfig2.setFileFilterConfigs(fileFilterConfigs);
+        fileInfoConfig2.setPath(inputFilePath2);
+
+        templateMakerFileConfig.setFiles(Arrays.asList(fileInfoConfig1,fileInfoConfig2));
 
         // 设置 modelInfo
         Meta.ModelConfig.ModelInfo modelInfo = new Meta.ModelConfig.ModelInfo();

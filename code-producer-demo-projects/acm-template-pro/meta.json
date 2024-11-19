@@ -1,0 +1,24 @@
+{
+    "name": "acm-template-generator",
+    "description": "ACM 示例模板生成器",
+    "fileConfig": {
+        "sourceRootPath": "D:/StarProject/CodeGenerator/code-producer-demo-projects/acm-template-pro",
+        "files": [
+            {
+                "inputPath": "src/com/ziio/acm/MainTemplate.java",
+                "outputPath": "src/com/ziio/acm/MainTemplate.java.ftl",
+                "type": "file",
+                "generateType": "dynamic"
+            }
+        ]
+    },
+    "modelConfig": {
+        "models": [
+            {
+                "fieldName": "outputText",
+                "type": "string",
+                "defaultValue": "sum = "
+            }
+        ]
+    }
+}

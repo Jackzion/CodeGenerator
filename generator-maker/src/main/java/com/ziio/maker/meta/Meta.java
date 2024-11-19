@@ -25,9 +25,9 @@ public class Meta {
     @NoArgsConstructor
     @Data
     public static class FileConfig {
-        private String inputRootPath;
-        private String outputRootPath;
-        private String sourceRootPath;
+        private String inputRootPath;   // template.copy path
+        private String outputRootPath;  // file output path
+        private String sourceRootPath;  // template.source path
         private String type;
         private List<FileInfo> files;
 

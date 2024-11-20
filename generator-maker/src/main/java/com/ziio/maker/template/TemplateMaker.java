@@ -264,8 +264,9 @@ public class TemplateMaker {
 
         // 使用字符串替换，生成模板文件
         String fileContent;
+        boolean hasTemplateFile = FileUtil.exist(fileOutputAbsolutePath);
         // 如果已有模板文件，read .ftl
-        if (FileUtil.exist(fileOutputAbsolutePath)) {
+        if (hasTemplateFile) {
             fileContent = FileUtil.readUtf8String(fileOutputAbsolutePath);
         }
         // 如果没有 ， read .java...
@@ -295,14 +296,22 @@ public class TemplateMaker {
         fileInfo.setType(FileTypeEnum.FILE.getValue());
         fileInfo.setGenerateType(FileGenerateTypeEnum.DYNAMIC.getValue());
 
-        // 和源文件内容一致，没有插值，则为静态生成
-        if (newFileContent.equals(fileContent)) {
-            // inputPath = outputPath
-            fileInfo.setOutputPath(fileInputPath);
-            fileInfo.setGenerateType(FileGenerateTypeEnum.STATIC.getValue());
-        } else {
+        boolean contentEquals = newFileContent.equals(fileContent);
+        // 无 .ftl
+        if (!hasTemplateFile) {
+            // 新老内容一致
+            if(contentEquals){
+                // 静态内容 , Template即它自己
+                fileInfo.setOutputPath(fileInputPath);
+                fileInfo.setGenerateType(FileGenerateTypeEnum.STATIC.getValue());
+            }else{
+                // 不一致 ， 生成模板
+                FileUtil.writeUtf8String(newFileContent,fileOutputAbsolutePath);
+            }
+        }
+        // 有 .ftl , 但 内容不一致 ， 追加
+        else if(!contentEquals) {
             // 生成模板文件
-            fileInfo.setGenerateType(FileGenerateTypeEnum.DYNAMIC.getValue());
             FileUtil.writeUtf8String(newFileContent, fileOutputAbsolutePath);
         }
         return fileInfo;
@@ -341,7 +350,7 @@ public class TemplateMaker {
         fileInfoConfig2.setPath(inputFilePath2);
 
         templateMakerFileConfig.setFiles(Arrays.asList(fileInfoConfig1,fileInfoConfig2));
-        // 设置 Template
+        // 设置 TemplateMakerModelConfig
         TemplateMakerModelConfig.ModelInfoConfig modelInfo = new TemplateMakerModelConfig.ModelInfoConfig();
         modelInfo.setFieldName("className");
         modelInfo.setType("String");

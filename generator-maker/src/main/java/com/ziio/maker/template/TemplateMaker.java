@@ -42,7 +42,7 @@ public class TemplateMaker {
             ArrayList<Meta.FileConfig.FileInfo> newFileInfoList = new ArrayList<>(tempFileInfoList.stream()
                     .flatMap(fileInfo -> fileInfo.getFiles().stream())
                     .collect(
-                            Collectors.toMap(Meta.FileConfig.FileInfo::getInputPath, o -> o, (e, r) -> r)
+                            Collectors.toMap(Meta.FileConfig.FileInfo::getOutputPath, o -> o, (e, r) -> r)
                     ).values()
             );
             // 使用新的 group 配置
@@ -60,7 +60,7 @@ public class TemplateMaker {
                 noGroupFileInfo.stream()
                         .collect(
                                 // 保留后者 inputPath
-                                Collectors.toMap(Meta.FileConfig.FileInfo::getInputPath, o -> o, (e, r) -> r)
+                                Collectors.toMap(Meta.FileConfig.FileInfo::getOutputPath, o -> o, (e, r) -> r)
                         ).values()
         ));
 
@@ -259,6 +259,7 @@ public class TemplateMaker {
      */
     public static Meta.FileConfig.FileInfo makeFileTemplate(TemplateMakerModelConfig templateMakerModelConfig, String sourceRootPath, File inputFile) {
         // 要处理的文件绝对路径(用于制作模板)
+        sourceRootPath = sourceRootPath.replaceAll("\\\\", "/");
         String fileInputAbsolutePath = inputFile.getAbsolutePath().replaceAll("\\\\", "/");
         String fileOutputAbsolutePath = fileInputAbsolutePath + ".ftl";
 
@@ -295,8 +296,9 @@ public class TemplateMaker {
 
         // 更改 meta.json
         Meta.FileConfig.FileInfo fileInfo = new Meta.FileConfig.FileInfo();
-        fileInfo.setInputPath(fileInputPath);
-        fileInfo.setOutputPath(fileOutputPath);
+        // 注意文件输入路径和输出路径反转
+        fileInfo.setInputPath(fileOutputPath);
+        fileInfo.setOutputPath(fileInputPath);
         fileInfo.setType(FileTypeEnum.FILE.getValue());
         fileInfo.setGenerateType(FileGenerateTypeEnum.DYNAMIC.getValue());
 
@@ -306,7 +308,7 @@ public class TemplateMaker {
             // 新老内容一致
             if(contentEquals){
                 // 静态内容 , Template即它自己
-                fileInfo.setOutputPath(fileInputPath);
+                fileInfo.setInputPath(fileInputPath);
                 fileInfo.setGenerateType(FileGenerateTypeEnum.STATIC.getValue());
             }else{
                 // 不一致 ， 生成模板

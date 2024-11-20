@@ -168,4 +168,13 @@ public class FreeMarkerTest {
         TemplateMaker.makeTemplate(templateMakerConfig);
     }
 
+    // 添加 Redis 配置 测试
+    @Test
+    public void makeSpringBootTemplate6(){
+        String rootPath = "examples/springboot-init/";
+        String configStr = ResourceUtil.readUtf8Str(rootPath + "templateMaker7.json");
+        TemplateMakerConfig templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
+        TemplateMaker.makeTemplate(templateMakerConfig);
+    }
+
 }

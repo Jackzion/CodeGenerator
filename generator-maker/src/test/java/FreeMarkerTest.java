@@ -124,6 +124,20 @@ public class FreeMarkerTest {
         String configStr = ResourceUtil.readUtf8Str(rootPath + "templateMaker.json");
         TemplateMakerConfig templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
         long id = TemplateMaker.makeTemplate(templateMakerConfig);
+        // 第二次读取 ， 不给 originPath , 自动读取工作站第一个
+        configStr = ResourceUtil.readUtf8Str(rootPath + "templateMaker1.json");
+        templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
+        TemplateMaker.makeTemplate(templateMakerConfig);
+        System.out.println(id);
+        System.out.println(id);
+    }
+
+    @Test
+    public void makeSpringBootTemplate3(){
+        String rootPath = "examples/springboot-init/";
+        String configStr = ResourceUtil.readUtf8Str(rootPath + "templateMaker2.json");
+        TemplateMakerConfig templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
+        long id = TemplateMaker.makeTemplate(templateMakerConfig);
         System.out.println(id);
     }
 

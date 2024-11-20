@@ -121,12 +121,17 @@ public class TemplateMaker {
         if (id == null) {
             id = IdUtil.getSnowflakeNextId();
         }
-        String absolutePath =FileUtil.getAbsolutePath(originProjectPath);
         // 复制目录
         String projectPath = System.getProperty("user.dir");
         String tempDirPath = projectPath + File.separator + ".temp";
         String templatePath = tempDirPath + File.separator + id;
-        String sourceRootPath = templatePath + File.separator + FileUtil.getLastPathEle(Paths.get(originProjectPath)).toString();
+        // 一、输入信息 ， 获取项目根目录(第一个文件夹 ， 持久化项目路径)
+        String sourceRootPath = FileUtil.loopFiles(new File(templatePath),1,null)
+                .stream()
+                .filter(File::isDirectory)
+                .findFirst()
+                .orElseThrow(RuntimeException::new)
+                .getAbsolutePath();
         // 是否为首次制作模板
         // 目录不存在，则是首次制作
         if (!FileUtil.exist(templatePath)) {

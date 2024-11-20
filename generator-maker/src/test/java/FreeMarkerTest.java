@@ -1,7 +1,11 @@
+import cn.hutool.core.io.resource.ResourceUtil;
+import cn.hutool.json.JSONUtil;
 import com.ziio.maker.meta.Meta;
+import com.ziio.maker.template.TemplateMaker;
 import com.ziio.maker.template.enums.FileFilterRangeEnum;
 import com.ziio.maker.template.enums.FileFilterRuleEnum;
 import com.ziio.maker.template.model.FileFilterConfig;
+import com.ziio.maker.template.model.TemplateMakerConfig;
 import com.ziio.maker.template.model.TemplateMakerFileConfig;
 import com.ziio.maker.template.model.TemplateMakerModelConfig;
 import freemarker.template.Configuration;
@@ -104,5 +108,13 @@ public class FreeMarkerTest {
 //        List<TemplateMakerModelConfig.ModelInfoConfig> modelInfoConfigList = Arrays.asList(modelInfoConfig1, modelInfoConfig2);
 //        templateMakerModelConfig.setModels(modelInfoConfigList);
 
+    }
+
+    @Test
+    public void testMakeTemplateWithJson(){
+        String configStr = ResourceUtil.readUtf8Str("templateMaker.json");
+        TemplateMakerConfig templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
+        long id = TemplateMaker.makeTemplate(templateMakerConfig);
+        System.out.println(id);
     }
 }

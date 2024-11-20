@@ -6,6 +6,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.template.TemplateConfig;
 import cn.hutool.json.JSONUtil;
 import com.ziio.maker.meta.Meta;
 import com.ziio.maker.meta.enums.FileGenerateTypeEnum;
@@ -13,6 +14,7 @@ import com.ziio.maker.meta.enums.FileTypeEnum;
 import com.ziio.maker.template.enums.FileFilterRangeEnum;
 import com.ziio.maker.template.enums.FileFilterRuleEnum;
 import com.ziio.maker.template.model.FileFilterConfig;
+import com.ziio.maker.template.model.TemplateMakerConfig;
 import com.ziio.maker.template.model.TemplateMakerFileConfig;
 import com.ziio.maker.template.model.TemplateMakerModelConfig;
 
@@ -176,7 +178,7 @@ public class TemplateMaker {
         }
 
         // 三、生成配置文件
-        String metaOutputPath = sourceRootPath + File.separator + "meta.json";
+        String metaOutputPath = templatePath + File.separator + "meta.json";
 
         // 处理 TemplateMakerModelConfig
         List<TemplateMakerModelConfig.ModelInfoConfig> models = templateMakerModelConfig.getModels();
@@ -247,6 +249,22 @@ public class TemplateMaker {
         FileUtil.writeUtf8String(JSONUtil.toJsonPrettyStr(newMeta), metaOutputPath);
         return id;
 
+    }
+
+    /**
+     * .ftl and meta.json 制作模板
+     *
+     * @param templateMakerConfig 模板生成配置类
+     * @return
+     */
+    public static long makeTemplate(TemplateMakerConfig templateMakerConfig){
+        Meta meta = templateMakerConfig.getMeta();
+        String originProjectPath = templateMakerConfig.getOriginProjectPath();
+        TemplateMakerFileConfig templateMakerFileConfig = templateMakerConfig.getFileConfig();
+        TemplateMakerModelConfig templateMakerModelConfig = templateMakerConfig.getModelConfig();
+        Long id = templateMakerConfig.getId();
+
+        return makeTemplate(meta, originProjectPath, templateMakerFileConfig, templateMakerModelConfig, id);
     }
 
     /**

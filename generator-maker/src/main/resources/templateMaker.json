@@ -10,8 +10,7 @@
         "path": "src/com/ziio/acm"
       }
     ]
-  },
-  "modelConfig": {
+  },  "modelConfig": {
     "models": [
       {
         "fieldName": "className",

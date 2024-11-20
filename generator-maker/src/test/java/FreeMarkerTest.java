@@ -124,12 +124,17 @@ public class FreeMarkerTest {
         String configStr = ResourceUtil.readUtf8Str(rootPath + "templateMaker.json");
         TemplateMakerConfig templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
         long id = TemplateMaker.makeTemplate(templateMakerConfig);
+    }
+
+    @Test
+    public void makeSpringBootTemplate2(){
         // 第二次读取 ， 不给 originPath , 自动读取工作站第一个
-        configStr = ResourceUtil.readUtf8Str(rootPath + "templateMaker1.json");
-        templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
-        TemplateMaker.makeTemplate(templateMakerConfig);
+        String rootPath = "examples/springboot-init/";
+        String configStr = ResourceUtil.readUtf8Str(rootPath + "templateMaker1.json");
+        TemplateMakerConfig templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
+        long id = TemplateMaker.makeTemplate(templateMakerConfig);
         System.out.println(id);
-        System.out.println(id);
+
     }
 
     @Test
@@ -139,6 +144,28 @@ public class FreeMarkerTest {
         TemplateMakerConfig templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
         long id = TemplateMaker.makeTemplate(templateMakerConfig);
         System.out.println(id);
+    }
+
+    // 添加 knife4j 配置 测试
+    @Test
+    public void makeSpringBootTemplate4(){
+        String rootPath = "examples/springboot-init/";
+        String configStr = ResourceUtil.readUtf8Str(rootPath + "templateMaker4.json");
+        TemplateMakerConfig templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
+        TemplateMaker.makeTemplate(templateMakerConfig);
+
+        configStr = ResourceUtil.readUtf8Str(rootPath + "templateMaker5.json");
+        templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
+        TemplateMaker.makeTemplate(templateMakerConfig);
+    }
+
+    // 添加 mysql 配置 测试
+    @Test
+    public void makeSpringBootTemplate5(){
+        String rootPath = "examples/springboot-init/";
+        String configStr = ResourceUtil.readUtf8Str(rootPath + "templateMaker6.json");
+        TemplateMakerConfig templateMakerConfig = JSONUtil.toBean(configStr, TemplateMakerConfig.class);
+        TemplateMaker.makeTemplate(templateMakerConfig);
     }
 
 }

@@ -9,7 +9,7 @@
     "files": [
       {
         "path": "src/main",
-        "filterConfigList": [
+        "fileFilterConfigs": [
           {
             "range": "fileName",
             "rule": "contains",

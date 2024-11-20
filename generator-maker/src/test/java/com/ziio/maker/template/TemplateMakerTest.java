@@ -37,7 +37,7 @@ public class TemplateMakerTest {
         List<TemplateMakerModelConfig.ModelInfoConfig> modelInfoConfigList = Arrays.asList(modelInfo);
         templateMakerModelConfig.setModels(modelInfoConfigList);
 
-        long id = TemplateMaker.makeTemplate(meta, originProjectPath, templateMakerFileConfig, templateMakerModelConfig, 1858691755625439232L);
+        long id = TemplateMaker.makeTemplate(meta, originProjectPath, null , templateMakerFileConfig, templateMakerModelConfig, 1858691755625439232L);
         System.out.println(id);
     }
 }

@@ -144,6 +144,10 @@ public class TemplateMaker {
 
             // 获取过滤后的文件列表(不再存在目录)
             List<File> fileList = FileFilter.doFileFilter(inputFilePath, fileInfoConfig.getFileFilterConfigs());
+            // 再次过滤 ： 不处理 .ftl
+            fileList = fileList.stream()
+                    .filter(file -> !file.getAbsolutePath().endsWith(".ftl"))
+                    .collect(Collectors.toList());
             for (File file : fileList) {
                 Meta.FileConfig.FileInfo fileInfo = makeFileTemplate(templateMakerModelConfig, sourceRootPath, file);
                 newFileInfoList.add(fileInfo);

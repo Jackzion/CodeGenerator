@@ -1,5 +1,6 @@
 package com.ziio.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -130,9 +131,9 @@ public class GeneratorServiceImpl extends ServiceImpl<GeneratorMapper, Generator
         Map<Long, List<User>> userIdUserListMap = userService.listByIds(userIdSet).stream()
                 .collect(Collectors.groupingBy(User::getId));
         // 填充信息
-        List<GeneratorVO> generatorVOList = generatorList.stream().map(Generator -> {
-            GeneratorVO generatorVO = GeneratorConvert.INSTANCE.convertGeneratorVOByGenerator(Generator);
-            Long userId = Generator.getUserId();
+        List<GeneratorVO> generatorVOList = generatorList.stream().map(generator -> {
+            GeneratorVO generatorVO = BeanUtil.copyProperties(generator,GeneratorVO.class);
+            Long userId = generator.getUserId();
             User user = null;
             if (userIdUserListMap.containsKey(userId)) {
                 user = userIdUserListMap.get(userId).get(0);

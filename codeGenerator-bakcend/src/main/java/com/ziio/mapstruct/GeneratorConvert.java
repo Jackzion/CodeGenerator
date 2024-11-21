@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.mapstruct.factory.Mappers;
 
 /**
- * Generator MapStruct
+ * Generator MapStruct todo: remove
  */
 @Mapper
 public interface GeneratorConvert {

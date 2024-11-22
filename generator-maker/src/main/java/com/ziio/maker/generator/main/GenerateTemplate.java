@@ -135,6 +135,10 @@ public abstract class GenerateTemplate {
         DynamicFileGenerator.doGenerate(inputFilePath,outputFilePath, meta);
     }
 
+    protected String buildZip(String outputPaht){
+        
+    }
+
     protected String copySourceTemplate(Meta meta, String outputPath) {
         String sourceRootPath = meta.getFileConfig().getSourceRootPath();
         String sourceCopyDestPath = outputPath + File.separator + ".source";

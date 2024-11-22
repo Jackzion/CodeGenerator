@@ -47,6 +47,12 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseString_ = {
+    code?: number;
+    data?: string;
+    message?: string;
+  };
+
   type BaseResponseUser_ = {
     code?: number;
     data?: User;
@@ -273,6 +279,11 @@ declare namespace API {
     searchCount?: boolean;
     size?: number;
     total?: number;
+  };
+
+  type testDownloadFileUsingGETParams = {
+    /** filePath */
+    filePath?: string;
   };
 
   type User = {

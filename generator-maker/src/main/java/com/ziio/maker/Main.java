@@ -1,6 +1,7 @@
 package com.ziio.maker;
 
-import com.ziio.maker.generator.main.MainGenerator;
+import com.ziio.maker.generator.main.GenerateTemplate;
+import com.ziio.maker.generator.main.ZipGenerator;
 import freemarker.template.TemplateException;
 
 import java.io.IOException;
@@ -11,7 +12,8 @@ public class Main {
 
 
     public static void main(String[] args) throws TemplateException, IOException, InterruptedException {
-        MainGenerator mainGenerator = new MainGenerator();
+//        MainGenerator mainGenerator = new MainGenerator();
+        GenerateTemplate mainGenerator = new ZipGenerator();
         mainGenerator.doGenerate();
     }
 }

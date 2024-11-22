@@ -3,6 +3,7 @@ package com.ziio.maker.generator.main;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.ZipUtil;
 import com.ziio.maker.generator.file.DynamicFileGenerator;
 import com.ziio.maker.generator.file.JarGenerator;
 import com.ziio.maker.generator.file.ScriptGenerator;
@@ -39,7 +40,15 @@ public abstract class GenerateTemplate {
         buildDist(outputPath, sourceCopyDestPath, jarPath, shellOutputPath);
     }
 
-    protected void buildDist(String outputPath, String sourceCopyDestPath, String jarPath, String shellOutputPath) {
+    /**
+     * 生成精简版程序
+     * @param outputPath
+     * @param sourceCopyDestPath
+     * @param jarPath
+     * @param shellOutputPath
+     * @return 产物包路径
+     */
+    protected String buildDist(String outputPath, String sourceCopyDestPath, String jarPath, String shellOutputPath) {
         String distOutputPath = outputPath + "-dist";
         // 拷贝 jar 包
         String targetAbsolutePath = distOutputPath + File.separator + "target";
@@ -50,6 +59,7 @@ public abstract class GenerateTemplate {
         FileUtil.copy(shellOutputPath + ".bat", distOutputPath, true);
         // 拷贝源模板文件
         FileUtil.copy(sourceCopyDestPath,distOutputPath,true);
+        return distOutputPath;
     }
 
     protected String buildScript(String outputPath, String jarPath) throws IOException, InterruptedException {
@@ -135,8 +145,15 @@ public abstract class GenerateTemplate {
         DynamicFileGenerator.doGenerate(inputFilePath,outputFilePath, meta);
     }
 
-    protected String buildZip(String outputPaht){
-        
+    /**
+     * 制作压缩包 (默认在同一目录下)
+     * @param outputPath
+     * @return
+     */
+    protected String buildZip(String outputPath){
+        String zipPath = outputPath + ".zip";
+        ZipUtil.zip(outputPath,zipPath);
+        return zipPath;
     }
 
     protected String copySourceTemplate(Meta meta, String outputPath) {

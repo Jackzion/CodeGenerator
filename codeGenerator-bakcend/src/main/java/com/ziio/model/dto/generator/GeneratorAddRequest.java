@@ -2,6 +2,7 @@ package com.ziio.model.dto.generator;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.ziio.meta.Meta;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -51,13 +52,12 @@ public class GeneratorAddRequest implements Serializable {
     /**
      * 文件配置（json字符串）
      */
-    private String fileConfig;
+    private Meta.FileConfig fileConfig;
 
     /**
      * 模型配置（json字符串）
      */
-    private String modelConfig;
-
+    private Meta.ModelConfig modelConfig;
     /**
      * 代码生成器产物路径
      */

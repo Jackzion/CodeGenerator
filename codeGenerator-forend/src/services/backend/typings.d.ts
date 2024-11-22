@@ -112,8 +112,8 @@ declare namespace API {
     basePackage?: string;
     description?: string;
     distPath?: string;
-    fileConfig?: string;
-    modelConfig?: string;
+    fileConfig?: FileConfig;
+    modelConfig?: ModelConfig;
     name?: string;
     picture?: string;
     tags?: string;
@@ -284,6 +284,10 @@ declare namespace API {
   type testDownloadFileUsingGETParams = {
     /** filePath */
     filePath?: string;
+  };
+
+  type uploadFileUsingPOSTParams = {
+    biz?: string;
   };
 
   type User = {
